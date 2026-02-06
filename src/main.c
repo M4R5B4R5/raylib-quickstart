@@ -1,54 +1,77 @@
-/*
-Raylib example file.
-This is an example main file for a simple raylib project.
-Use this as a starting point or replace it with your code.
-
-by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit https://creativecommons.org/publicdomain/zero/1.0/
-
-*/
-
 #include "raylib.h"
+#include "include/maze.h"
+#include "include/tile.h"
 
-#include "resource_dir.h"	// utility header for SearchAndSetResourceDir
+void render() {
+	// Maze *m = maze_from_file("src/mazes/maze.txt");
+	// Maze *m = maze_from_file("src/mazes/large_maze.txt");
+	Maze *m = maze_from_file("src/mazes/medium_maze.txt");
 
-int main ()
-{
-	// Tell the window to use vsync and work on high DPI displays
-	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
+	int width = 1600;
+	int height = 1600;
 
-	// Create the window and OpenGL context
-	InitWindow(1280, 800, "Hello Raylib");
+	width = (width / m->width) * m->width;
+	height = (height / m->height) * m->height;
 
-	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
-	SearchAndSetResourceDir("resources");
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    InitWindow(width, height, "raylib [core] example - basic window");
 
-	// Load a texture from the resources directory
-	Texture wabbit = LoadTexture("wabbit_alpha.png");
-	
-	// game loop
-	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
-	{
-		// drawing
-		BeginDrawing();
+	int ignore = 0;
+    while (!WindowShouldClose())
+    {
+		if (IsWindowResized()) {
+			int w = GetScreenWidth();
+			int h = GetScreenHeight();
 
-		// Setup the back buffer for drawing (clear color and depth buffers)
-		ClearBackground(BLACK);
+			width = w;
+			height = h;
+		}
 
-		// draw some text using the default font
-		DrawText("Hello Raylib", 200,200,20,WHITE);
+        BeginDrawing();
 
-		// draw our texture to the screen
-		DrawTexture(wabbit, 400, 200, WHITE);
-		
-		// end the frame and get ready for the next one  (display frame, poll input, etc...)
+		ClearBackground(WHITE);
+
+		for (int y = 0; y < m->height; ++y) {
+			for (int x = 0; x < m->width; ++x) {
+				Tile t = m->tiles[y][x];
+				Color c = WHITE;
+
+				switch (t.type) {
+					case WALL:
+						c = BLACK;
+						break;
+					case EMPTY:
+						c = WHITE;
+							break;
+					case START:
+						c = BLUE;
+						break;
+					case END:
+						c = RED;
+						break;
+				}
+
+				int w = width / m->width;
+				int h = height / m->height;
+
+				DrawRectangle(x * w, y * h, w, h, c);
+			}
+		}
+
 		EndDrawing();
-	}
+    }
 
-	// cleanup
-	// unload our texture so it can be cleaned up
-	UnloadTexture(wabbit);
+    CloseWindow();
+}
 
-	// destroy the window and cleanup the OpenGL context
-	CloseWindow();
-	return 0;
+int main(void)
+{
+	face_table_init();
+
+	// Maze *m = maze_from_file("src/mazes/maze.txt");
+	// maze_print(m);
+
+	render();
+
+    return 0;
 }
