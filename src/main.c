@@ -4,8 +4,8 @@
 
 void render() {
 	// Maze *m = maze_from_file("src/mazes/small_maze.txt");
-	Maze *m = maze_from_file("src/mazes/large_maze.txt");
-	// Maze *m = maze_from_file("src/mazes/medium_maze.txt");
+	// Maze *m = maze_from_file("src/mazes/large_maze.txt");
+	Maze *m = maze_from_file("src/mazes/medium_maze.txt");
 	maze_solve_dfs(m);
 
 	int width = 1600;
@@ -15,11 +15,11 @@ void render() {
 	height = (height / m->height) * m->height;
 
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-	SetTargetFPS(60);
+	SetTargetFPS(240);
     InitWindow(width, height, "Maze Solver");
 
 	float step_timer = 0.0f;
-	float step_delay = 0.01f;
+	float step_delay = 0.005f;
 
     while (!WindowShouldClose())
     {

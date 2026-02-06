@@ -98,7 +98,7 @@ void maze_solve_dfs(Maze *m) {
     memset(visited, false, sizeof(visited));
     memset(pred, 0, sizeof(pred));
 
-    maze_dfs(m, P(0, 0), visited, pred);
+    maze_dfs(m, m->start, visited, pred);
 
     Path *path = path_new();
     Point *end = &m->end;
