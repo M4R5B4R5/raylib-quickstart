@@ -3,9 +3,10 @@
 #include "include/tile.h"
 
 void render() {
-	// Maze *m = maze_from_file("src/mazes/maze.txt");
-	// Maze *m = maze_from_file("src/mazes/large_maze.txt");
-	Maze *m = maze_from_file("src/mazes/medium_maze.txt");
+	// Maze *m = maze_from_file("src/mazes/small_maze.txt");
+	Maze *m = maze_from_file("src/mazes/large_maze.txt");
+	// Maze *m = maze_from_file("src/mazes/medium_maze.txt");
+	maze_solve_dfs(m);
 
 	int width = 1600;
 	int height = 1600;
@@ -14,11 +15,22 @@ void render() {
 	height = (height / m->height) * m->height;
 
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(width, height, "raylib [core] example - basic window");
+	SetTargetFPS(60);
+    InitWindow(width, height, "Maze Solver");
 
-	int ignore = 0;
+	float step_timer = 0.0f;
+	float step_delay = 0.01f;
+
     while (!WindowShouldClose())
     {
+		float dt = GetFrameTime();
+		step_timer += dt;
+
+		if (step_timer >= step_delay) {
+			step_timer -= step_delay;
+			maze_step(m);
+		}
+
 		if (IsWindowResized()) {
 			int w = GetScreenWidth();
 			int h = GetScreenHeight();
@@ -44,7 +56,11 @@ void render() {
 						c = WHITE;
 							break;
 					case START:
+					case PATH:
 						c = BLUE;
+						break;
+					case PATH_COMPLETE:
+						c = GREEN;
 						break;
 					case END:
 						c = RED;
@@ -62,6 +78,8 @@ void render() {
     }
 
     CloseWindow();
+
+	maze_free(m);
 }
 
 int main(void)

@@ -11,6 +11,7 @@ void face_table_init() {
     face_table['#'] = WALL;
     face_table['S'] = START;
     face_table['E'] = END;
+    face_table['.'] = PATH;
 }
 
 Tile tile_new(Face type) {

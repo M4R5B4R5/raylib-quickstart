@@ -10,6 +10,8 @@ typedef enum {
     WALL = '#',
     START = 'S',
     END = 'E',
+    PATH = '.',
+    PATH_COMPLETE = '+',
     UNKNOWN,
 } Face;
 
