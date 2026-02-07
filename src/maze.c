@@ -2,7 +2,11 @@
 #include <stdlib.h>
 
 #include "include/maze.h"
-#include <time.h>
+
+typedef struct {
+    Point u;
+    Point v;
+} Edge;
 
 Maze *maze_new(size_t width, size_t height) {
     Maze *m = malloc(sizeof(Maze));
@@ -16,6 +20,14 @@ Maze *maze_new(size_t width, size_t height) {
         }
     }
     return m;
+}
+
+Maze *maze_generate(size_t width, size_t height) {
+    Maze *m = maze_new(width, height);
+
+    
+
+    maze_print(m);
 }
 
 Maze *maze_from_file(const char *path) {
@@ -132,9 +144,12 @@ void maze_step(Maze *m) {
 }
 
 void maze_print(Maze *m) {
+    printf("\n");
     for (int y = 0; y < m->height; ++y) {
         for (int x = 0; x < m->width; ++x) {
+            printf(" ");
             printf("%c", m->tiles[y][x].type);
+            printf(" ");
         }
         printf("\n");
     }

@@ -25,7 +25,10 @@ typedef struct {
 } Maze;
 
 Maze *maze_new(size_t width, size_t height);
+Maze *maze_generate(size_t width, size_t height);
 Maze *maze_from_file(const char *path);
+
+bool maze_valid_point(Maze *m, Point p);
 
 void maze_solve_dfs(Maze *m);
 void maze_step(Maze *m);

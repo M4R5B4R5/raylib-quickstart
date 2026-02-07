@@ -6,7 +6,7 @@
 void face_table_init();
 
 typedef enum {
-    EMPTY = ' ',
+    EMPTY = '`',
     WALL = '#',
     START = 'S',
     END = 'E',
