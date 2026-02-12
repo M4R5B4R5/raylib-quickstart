@@ -6,7 +6,9 @@ void render() {
 	// Maze *m = maze_from_file("src/mazes/small_maze.txt");
 	Maze *m = maze_from_file("src/mazes/large_maze.txt");
 	// Maze *m = maze_from_file("src/mazes/medium_maze.txt");
-	maze_solve_dfs(m);
+	// Maze *m = maze_from_file("src/mazes/map.txt");
+	maze_solve(m, DFS);
+	// path_print(m->solution);
 
 	int width = 1600;
 	int height = 1600;
@@ -19,7 +21,7 @@ void render() {
     InitWindow(width, height, "Maze Solver");
 
 	float step_timer = 0.0f;
-	float step_delay = 0.02f;
+	float step_delay = 0.001f;
 
     while (!WindowShouldClose())
     {

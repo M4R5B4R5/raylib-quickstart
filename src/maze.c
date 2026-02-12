@@ -79,38 +79,24 @@ bool maze_valid_point(Maze *m, Point p) {
     return p.x >= 0 && p.x < m->width && p.y >= 0 && p.y < m->height;
 }
 
-void maze_dfs(Maze *m, Point p, bool visited[m->width][m->height], Point *pred[m->width][m->height]) {
-    visited[p.y][p.x] = true;
-
-    Point neighbours[4] = {
-        point_add(p, P(0, -1)),
-        point_add(p, P(-1, 0)),
-        point_add(p, P(1, 0)),
-        point_add(p, P(0, 1))
-    };
-
-    int n = sizeof(neighbours) / sizeof(Point);
-    for (int i = 0; i < n; ++i) {
-        Point u = neighbours[i];
-        if (maze_valid_point(m, u) && !visited[u.y][u.x] && m->tiles[u.y][u.x].type != WALL) {
-            if (pred[u.y][u.x] == NULL) {
-                pred[u.y][u.x] = malloc(sizeof(Point));
-            }
-
-            *pred[u.y][u.x] = p;
-            maze_dfs(m, u, visited, pred);
-        }
-    }
-}
-
-void maze_solve_dfs(Maze *m) {
+void maze_solve(Maze *m, MazeStrategy strategy) {
     bool visited[m->height][m->width];
     Point *pred[m->height][m->width];
 
     memset(visited, false, sizeof(visited));
     memset(pred, 0, sizeof(pred));
 
-    maze_dfs(m, m->start, visited, pred);
+    switch (strategy) {
+        case DFS:
+            maze_bfs(m, m->start, visited, pred);
+            break;
+        case BFS:
+            maze_bfs(m, m->start, visited, pred);
+            break;
+        default:
+            maze_dfs(m, m->start, visited, pred);
+            break;
+    }
 
     Path *path = path_new();
     Point *end = &m->end;
@@ -126,6 +112,60 @@ void maze_solve_dfs(Maze *m) {
     }
 
     m->solution = path;
+}
+
+void maze_bfs(Maze *m, Point start, bool visited[m->height][m->width], Point *pred[m->height][m->width]) {
+    Point queue[MAX_QUEUE_LEN];
+    int q_front = 0;
+    int q_size = 0;
+
+    queue[(q_front + q_size) % MAX_QUEUE_LEN] = start;
+    ++q_size;
+    visited[start.y][start.x] = true;
+
+    while (q_size != 0) {
+        Point p = queue[q_front];
+        q_front = (q_front + 1) % MAX_QUEUE_LEN;
+        --q_size;
+        
+        Point neighbours[NEIGHBOURS_LEN];
+        point_neighbours(p, neighbours);
+        
+        for (size_t i = 0; i < NEIGHBOURS_LEN; ++i) {
+            Point u = neighbours[i];
+            if (maze_valid_point(m, u) && !visited[u.y][u.x] && m->tiles[u.y][u.x].type != WALL) {                
+                visited[u.y][u.x] = true;
+
+                if (pred[u.y][u.x] == NULL) {
+                    pred[u.y][u.x] = malloc(sizeof(Point));
+                }
+
+                *(pred[u.y][u.x]) = p;
+
+                queue[(q_front + q_size) % MAX_QUEUE_LEN] = u;
+                ++q_size;
+            }
+        }
+    }
+}
+
+void maze_dfs(Maze *m, Point p, bool visited[m->height][m->width], Point *pred[m->height][m->width]) {
+    visited[p.y][p.x] = true;
+
+    Point neighbours[NEIGHBOURS_LEN];
+    point_neighbours(p, neighbours);
+
+    for (int i = 0; i < NEIGHBOURS_LEN; ++i) {
+        Point u = neighbours[i];
+        if (maze_valid_point(m, u) && !visited[u.y][u.x] && m->tiles[u.y][u.x].type != WALL) {
+            if (pred[u.y][u.x] == NULL) {
+                pred[u.y][u.x] = malloc(sizeof(Point));
+            }
+
+            *pred[u.y][u.x] = p;
+            maze_dfs(m, u, visited, pred);
+        }
+    }
 }
 
 void maze_step(Maze *m) {
